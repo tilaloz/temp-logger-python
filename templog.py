@@ -4,7 +4,7 @@ Spyder Editor
 
 
 """
-from w1thermsensor import W1ThermSensor
+from w1thermsensor import W1ThermSensor, Unit
 import logging
 import time
 
@@ -21,7 +21,7 @@ first = True
 
 try:
     while (True):
-        temp_f = sensor.get_temperature(W1ThermSensor.DEGREES_F)
+        temp_f = sensor.get_temperature(Unit.DEGREES_F)
         logging.warning(str(temp_f))
         print(str(temp_f))
         msg = 'Outside temperature at Harts is {0:.1f} DEG F'.format(temp_f)
@@ -29,7 +29,5 @@ try:
         time.sleep(6)
 
 except KeyboardInterrupt:
-    print "Done Logging Temp"
-    
+    print("Done Logging Temp")
 
-    
