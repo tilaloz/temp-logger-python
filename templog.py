@@ -21,12 +21,13 @@ first = True
 
 try:
     while (True):
-        temp_f = sensor.get_temperature(Unit.DEGREES_F)
-        logging.warning(str(temp_f))
-        print(str(temp_f))
-        msg = 'Outside temperature at Harts is {0:.1f} DEG F'.format(temp_f)
+        for sensor in W1ThermSensor.get_available_sensors():
+            temp_f = sensor.get_temperature(Unit.DEGREES_F)
+            logging.warning(str(temp_f))
+            print(str(temp_f))
+            msg = 'Outside temperature at Harts is {0:.1f} DEG F'.format(temp_f)
 
-        time.sleep(6)
+        time.sleep(600)
 
 except KeyboardInterrupt:
     print("Done Logging Temp")
