@@ -20,7 +20,7 @@ import time
 #                    filemode='w')
 #
 #first = True
-lsb = 0.115 #deg F
+LSB = 0.115 #deg F
 #first = 
 #name_list = [];
 #name_list.append("YYYYMMDDHHMMSS")
@@ -57,7 +57,7 @@ try:
                 print(screen_output)
                 log[index].write(file_output)
                 first[index] = False
-            elif abs(current_temp[index]- last_temp[index]) > lsb:
+            elif abs(current_temp[index]- last_temp[index]) > LSB:
                 #record
                 last_temp[index] = current_temp[index]
                 print(screen_output)
@@ -71,8 +71,7 @@ except KeyboardInterrupt:
         current_temp[index] = sensor.get_temperature(W1ThermSensor.DEGREES_F)
         file_output = time.strftime("%Y%m%d%H%M%S",time.localtime()) + ',' + str(current_temp[index]) + '\n'
         log[index].write(file_output)
-        log[index].close()
+finally: # Ensure that the file is always closed.
+    log[index].close()
     print "Done Logging Temp"
-    
-
     
