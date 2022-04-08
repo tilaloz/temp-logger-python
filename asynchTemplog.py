@@ -72,6 +72,7 @@ except KeyboardInterrupt:
         file_output = time.strftime("%Y%m%d%H%M%S",time.localtime()) + ',' + str(current_temp[index]) + '\n'
         log[index].write(file_output)
 finally: # Ensure that the file is always closed.
-    log[index].close()
+    for file in log:
+        file.close()
     print "Done Logging Temp"
     
