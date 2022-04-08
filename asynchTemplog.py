@@ -4,7 +4,7 @@ Spyder Editor
 
 
 """
-from w1thermsensor import W1ThermSensor
+from w1thermsensor import W1ThermSensor, Unit
 
 import time
 import pandas as pd
@@ -23,9 +23,10 @@ try:
     for sensor in W1ThermSensor.get_available_sensors():
         row = pd.DataFrame(
                 {"Sensor" + sensor.id: 
-                sensor.get_temperature(W1ThermSensor.DEGREES_F) 
+                sensor.get_temperature(Unit.DEGREES_F) 
                 }, index=[datetime.now()])
-        pd.concat([temperature_log, row])
+        pd.concat([temperature_log, row], axis=1)
+        print(temperature_log)
 
     while (True):
         row = pd.DataFrame(
@@ -34,7 +35,7 @@ try:
                 for sensor in W1ThermSensor.get_available_sensors()
                 if abs(value - temperature_log["Sensor" + sensor.id]) > LSB
                 }, index=[datetime.now()])
-        pd.concat([temperature_log, row])
+        pd.concat([temperature_log, row], axis= 1)
 
         
         time.sleep(6)
@@ -44,9 +45,9 @@ except KeyboardInterrupt:
                 {f"Sensor{sensor.id}": 
                 sensor.get_temperature(W1ThermSensor.DEGREES_F) 
                 }, index=[datetime.now()])
-    pd.concat([temperature_log, row])
+    pd.concat([temperature_log, row],axis=1)
 finally:
     for column in temperature_log:
-        temperature_log[column].dropna().tocsv(df.index[0].strftime('%Y%m%d%H%M%S') + '_' + sensor.id + '_tempLogInF.csv')
+        temperature_log[column].dropna().to_csv(temperature_log.index[0].strftime('%Y%m%d%H%M%S') + '_' + sensor.id + '_tempLogInF.csv')
     # print "Done Logging Temp"
     
