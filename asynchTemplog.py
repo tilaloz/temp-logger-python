@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python
+#-*- coding: utf-8 -*-
 """
 Spyder Editor
 
@@ -15,38 +16,35 @@ LSB = 0.115 #deg F
 
 try:  
     temperature_log = pd.DataFrame({
-        "Sensor" + sensor.id: []
+        f"Sensor{sensor.id}": []
         for sensor in W1ThermSensor.get_available_sensors()
     })
 
     #append to each of the lists
     row = pd.DataFrame(
-            {"Sensor" + sensor.id: 
+            {f"Sensor{sensor.id}": 
             sensor.get_temperature(Unit.DEGREES_F) 
             for sensor in W1ThermSensor.get_available_sensors()}, index=[datetime.now()])
-    pd.concat([temperature_log, row], axis=1)
-    print(temperature_log)
+    temperature_log = pd.concat([temperature_log, row])
 
     while (True):
-        row = pd.DataFrame(
-                {"Sensor" + sensor.id: 
-                value
-                for sensor in W1ThermSensor.get_available_sensors()
-                if abs((value := sensor.get_temperature(Unit.DEGREES_F)) - temperature_log["Sensor" + sensor.id]) > LSB
-                }, index=[datetime.now()])
-        pd.concat([temperature_log, row], axis= 1)
-
-        
+        for sensor in W1ThermSensor.get_available_sensors():
+            if abs(sensor.get_temperature(Unit.DEGREES_F) - float(temperature_log[f"Sensor{sensor.id}"].iat[-1])) > LSB:
+                row = pd.DataFrame(
+                        {f"Sensor{sensor.id}": 
+                        sensor.get_temperature(Unit.DEGREES_F)
+                        for sensor in W1ThermSensor.get_available_sensors()
+                        }, index=[datetime.now()])
+                temperature_log = pd.concat([temperature_log, row])
+                print(temperature_log)
+                break
         time.sleep(6)
 
 except KeyboardInterrupt:
     row = pd.DataFrame(
                 {f"Sensor{sensor.id}": 
-                sensor.get_temperature(W1ThermSensor.DEGREES_F) 
+                sensor.get_temperature(Unit.DEGREES_F) 
                 }, index=[datetime.now()])
-    pd.concat([temperature_log, row],axis=1)
+    temperature_log = pd.concat([temperature_log, row])
 finally:
-    for column in temperature_log:
-        temperature_log[column].dropna().to_csv(temperature_log.index[0].strftime('%Y%m%d%H%M%S') + '_' + sensor.id + '_tempLogInF.csv')
-    # print "Done Logging Temp"
-    
+    temperature_log.to_csv(f"{temperature_log.index[0].strftime('%Y%m%d%H%M%S')}_Temperature_Data.csv", index_label="Time")
