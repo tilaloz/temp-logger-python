@@ -20,20 +20,19 @@ try:
     })
 
     #append to each of the lists
-    for sensor in W1ThermSensor.get_available_sensors():
-        row = pd.DataFrame(
-                {"Sensor" + sensor.id: 
-                sensor.get_temperature(Unit.DEGREES_F) 
-                }, index=[datetime.now()])
-        pd.concat([temperature_log, row], axis=1)
-        print(temperature_log)
+    row = pd.DataFrame(
+            {"Sensor" + sensor.id: 
+            sensor.get_temperature(Unit.DEGREES_F) 
+            for sensor in W1ThermSensor.get_available_sensors()}, index=[datetime.now()])
+    pd.concat([temperature_log, row], axis=1)
+    print(temperature_log)
 
     while (True):
         row = pd.DataFrame(
                 {"Sensor" + sensor.id: 
                 value
                 for sensor in W1ThermSensor.get_available_sensors()
-                if abs((value := sensor.get_temperature(W1ThermSensor.DEGREES_F)) - temperature_log["Sensor" + sensor.id]) > LSB
+                if abs((value := sensor.get_temperature(Unit.DEGREES_F)) - temperature_log["Sensor" + sensor.id]) > LSB
                 }, index=[datetime.now()])
         pd.concat([temperature_log, row], axis= 1)
 
